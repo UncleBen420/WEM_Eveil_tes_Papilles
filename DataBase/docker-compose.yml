@@ -1,6 +1,6 @@
 version: "3.0"
 services:
-  es-wem-labo01:
+  es-wem-eveil:
     container_name: es-wem-eveil
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
     environment:
@@ -21,7 +21,7 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
-  kb-wem-labo01:
+  kb-wem-eveil:
     container_name: kb-wem-eveil
     image: docker.elastic.co/kibana/kibana:7.17.0
     environment:
@@ -36,9 +36,9 @@ services:
       - 5601:5601
 
 volumes:
-  es-wem-labo01-data:
+  es-wem-eveil-data:
     driver: local
-  kb-wem-labo01-data:
+  kb-wem-eveil-data:
     driver: local
 
 networks:
