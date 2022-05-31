@@ -156,10 +156,13 @@ class EveilleTesPapilles:
         #return self.wv.similar_by_vector(ingredient)
 
     def predictSuggestion(self,ingredients,less=""):
-       suggestion = self.wv.most_similar(positive=ingredients,negative=less)
-       sugg = [ingredient[0] for ingredient in suggestion]
-       return self.listInDictionnary(sugg)
-       #return self.wv.most_similar(positive=ingredients)
+        if less == "":
+            suggestion = self.wv.most_similar(positive=ingredients)
+        else:
+            suggestion = self.wv.most_similar(positive=ingredients,negative=[less])
+        sugg = [ingredient[0] for ingredient in suggestion]
+        return self.listInDictionnary(sugg)
+        #return self.wv.most_similar(positive=ingredients)
 
     def predictWinePairingWine(recipe,ingredients):
         pass
