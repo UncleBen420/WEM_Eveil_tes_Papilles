@@ -21,9 +21,10 @@ class EveilleTesPapilles:
         self.recipeFiles = recipeFilesName
         self.recipeDta = self.__importFiles(recipeFilesName)
         self.corpus_lemma = self.__loadJsonData('recipe_data_tokenized.json')
-        ingredients = self.__createIngredientList(self.recipeDta)
-        self.ingredientDico = self.__lemmaIngredientList(ingredients)
+        self.ingredientDictionnary = self.__createIngredientList(self.recipeDta)
+        self.ingredientDictionnaryLemma = self.__lemmaIngredientDictionnary()
         self.wv = KeyedVectors.load(path, mmap='r')
+        self.stop_words = ['a','se','et',':','de','du','le','la','1','2','3','4','5','les','l\'','me','te','.',',','\'','(',')','6-7','!']
 
     def info(self):
         print('***************************')
@@ -34,7 +35,8 @@ class EveilleTesPapilles:
         for i, file in enumerate(self.recipeFiles):
             print('There are',len(self.recipeDta[i]),'recipes for',file)
         
-        print('There are',len(self.ingredientDico),'ingredients in the dico')
+        print('There are',len(self.ingredientDictionnary),'ingredients in the dico')
+        print('There are',len(self.ingredientDictionnaryLemma),'ingredients in the lemmatizated dico')
 
 
 # ***************************************************************************************************
@@ -74,16 +76,20 @@ class EveilleTesPapilles:
         if corpus_lemma=="":
             corpus_lemma = []
             [corpus_lemma.append(nlp(recipe)) for recipe in corpus]
-            with open('recipe_data_tokenized.json', 'w') as outfile:
-                for i in range(len(corpus_lemma)):
-                    liste = [token.lemma_ for token in corpus_lemma[i]]
-                    jsonString = json.dumps(liste)  
-                    outfile.write(jsonString)
-                    outfile.write('\n')
-        stop_words = ['a','se','et',':','de','du','le','la','1','2','3','4','5','les','l\'','me','te','.',',','\'','(',')','6-7']
+            ##with open('recipe_data_tokenized.json', 'w') as outfile:
+            ##    for i in range(len(corpus_lemma)):
+            ##        liste = [token.lemma_ for token in corpus_lemma[i]]
+            ##        jsonString = json.dumps(liste)  
+            ##        outfile.write(jsonString)
+            ##        outfile.write('\n')
         nltk_token = []
-        nltk_token = [[w.lower() for w in t if not w.lower() in stop_words] for t in corpus_lemma]
+        nltk_token = [[w.lower() for w in t if not w.lower() in self.stop_words] for t in corpus_lemma]
         return nltk_token
+
+    def lemmaList(self,list):
+        lemma =  [nlp(word) for word in list]
+        nltk_token = []
+        nltk_token = [[w.lower() for w in t if not w.lower() in self.stop_words] for t in lemma]
 
     def __createModel(self, corpus):
         start_time = time.time()
@@ -113,16 +119,17 @@ class EveilleTesPapilles:
                         ingredientsList.append(ingredients['ingredient'])
                 except:
                     pass
-        return ingredientsList
-    def __lemmaIngredientList(self,ingredients):
-        ingredientDico = corpora.Dictionary([ingredients])
-        ingredientsList = [nlp(value) for value in ingredientDico.token2id]
+        ingredientsLower = [ingredient.lower() for ingredient in ingredientsList]
+        return corpora.Dictionary([ingredientsLower])
+
+    def __lemmaIngredientDictionnary(self):
+        ingredientsList = [nlp(value) for value in self.ingredientDictionnary.token2id]
         ingredientsList_lemma = [token[0].lemma_ for token in ingredientsList]
         ingredientDico_lemma = corpora.Dictionary([ingredientsList_lemma])
         return ingredientDico_lemma
     
-    def __listInDictionnary(self, list_words):
-        new_list=[word for word in list_words if word in self.ingredientDico.token2id]
+    def listInDictionnary(self, list_words):
+        new_list=[word for word in list_words if word in self.ingredientDictionnary.token2id]
         return new_list
 
 # ***************************************************************************************************
@@ -141,12 +148,18 @@ class EveilleTesPapilles:
             plt.text(x + 0.03, y + 0.03, word)   
     # 
     def predictIngredient(self,recipe,ingredient):
+        lemma = nlp(recipe)
+        word = [word.lemma_ for word in lemma]
+        token = [[w.lower() for w in word if not w.lower() in self.stop_words]]
+        tokenInDico = self.listInDictionnary(token[0])
+        return self.predictSuggestion(tokenInDico,ingredient)
+        #return self.wv.similar_by_vector(ingredient)
 
-        return self.wv.similar_by_word(ingredient)
-
-    def predictSuggestion(self,ingredients):
-       #return self.wv.most_similar(positive=self.__ListInDictionnary(ingredients))
-       return self.wv.most_similar(positive=ingredients)
+    def predictSuggestion(self,ingredients,less=""):
+       suggestion = self.wv.most_similar(positive=ingredients,negative=less)
+       sugg = [ingredient[0] for ingredient in suggestion]
+       return self.listInDictionnary(sugg)
+       #return self.wv.most_similar(positive=ingredients)
 
     def predictWinePairingWine(recipe,ingredients):
         pass
