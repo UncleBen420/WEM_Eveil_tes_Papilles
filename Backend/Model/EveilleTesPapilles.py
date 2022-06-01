@@ -1,7 +1,7 @@
 ## Import libs
 
 import json
-import os    
+import os
 import time
 #import pandas as pd
 #import numpy as np
@@ -16,7 +16,7 @@ import spacy
 nlp = spacy.load('fr_core_news_sm')
 
 class EveilleTesPapilles:
-    
+
     def __init__(self, path, recipeFilesName) -> None:
         self.recipeFiles = recipeFilesName
         self.recipeDta = self.__importFiles(recipeFilesName)
@@ -34,7 +34,7 @@ class EveilleTesPapilles:
         print('There are',len(self.recipeFiles),'recipe files')
         for i, file in enumerate(self.recipeFiles):
             print('There are',len(self.recipeDta[i]),'recipes for',file)
-        
+
         print('There are',len(self.ingredientDictionnary),'ingredients in the dico')
         print('There are',len(self.ingredientDictionnaryLemma),'ingredients in the lemmatizated dico')
 
@@ -45,7 +45,7 @@ class EveilleTesPapilles:
     def LoadModel(self,path):
         self.wv = KeyedVectors.load(path, mmap='r')
 
-    ## Model Word2Vec creation 
+    ## Model Word2Vec creation
     def Train(self, nltk_token):
         model = self.__CreateModel(nltk_token)
         print('The vocabulary has',len(model.wv.key_to_index),'words')
@@ -79,7 +79,7 @@ class EveilleTesPapilles:
             ##with open('recipe_data_tokenized.json', 'w') as outfile:
             ##    for i in range(len(corpus_lemma)):
             ##        liste = [token.lemma_ for token in corpus_lemma[i]]
-            ##        jsonString = json.dumps(liste)  
+            ##        jsonString = json.dumps(liste)
             ##        outfile.write(jsonString)
             ##        outfile.write('\n')
         nltk_token = []
@@ -127,14 +127,14 @@ class EveilleTesPapilles:
         ingredientsList_lemma = [token[0].lemma_ for token in ingredientsList]
         ingredientDico_lemma = corpora.Dictionary([ingredientsList_lemma])
         return ingredientDico_lemma
-    
+
     def listInDictionnary(self, list_words):
         new_list=[word for word in list_words if word in self.ingredientDictionnary.token2id]
         return new_list
 
 # ***************************************************************************************************
 # Job methods
-# ***************************************************************************************************   
+# ***************************************************************************************************
 
     ## Display scatterplot of PCA
     def displayScatterplot(self, model, words): # assumes all words are in the vocabulary
@@ -145,8 +145,8 @@ class EveilleTesPapilles:
         plt.figure(figsize=(6,6))
         plt.scatter(twodim[:,0], twodim[:,1], edgecolors='k', c='r')
         for word, (x,y) in zip(words, twodim):
-            plt.text(x + 0.03, y + 0.03, word)   
-    # 
+            plt.text(x + 0.03, y + 0.03, word)
+    #
     def predictIngredient(self,recipe,ingredient):
         lemma = nlp(recipe)
         word = [word.lemma_ for word in lemma]
@@ -156,16 +156,16 @@ class EveilleTesPapilles:
         #return self.wv.similar_by_vector(ingredient)
 
     def predictSuggestion(self,ingredients,less=""):
-        if less == "":
-            suggestion = self.wv.most_similar(positive=ingredients)
-        else:
-            suggestion = self.wv.most_similar(positive=ingredients,negative=[less])
-        sugg = [ingredient[0] for ingredient in suggestion]
-        return self.listInDictionnary(sugg)
+    	ingre2 = self.listInDictionnary(ingredients)
+    	if less == "":
+    	    suggestion = self.wv.most_similar(positive=ingre2)
+    	else:
+    	    suggestion = self.wv.most_similar(positive=ingre2,negative=[less])
+    	sugg = [ingredient[0] for ingredient in suggestion]
+    	return self.listInDictionnary(sugg)
         #return self.wv.most_similar(positive=ingredients)
 
     def predictWinePairingWine(recipe,ingredients):
         pass
     def predictWinePairingRecipe(pairWell):
         pass
-

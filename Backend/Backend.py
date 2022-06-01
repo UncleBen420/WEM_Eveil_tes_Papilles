@@ -7,10 +7,14 @@
 from flask import Flask, jsonify, request
 from waitress import serve
 from DatabaseWrapper import DatabaseWrapper
+from Model.EveilleTesPapilles import EveilleTesPapilles
 
 # Other used objects
 app = Flask("Eveil_Tes_Papilles")
-model = "model"
+
+recipeFilesName = ['Model/entree.jl','Model/plat.jl','Model/dessert.jl','Model/red_wines.jl','Model/white_wines.jl']
+
+model = EveilleTesPapilles("Model/EveilleTesPapilles.word2vec.wordvectors", recipeFilesName)
 databaseWrapper = DatabaseWrapper()
 
 ## function describing the comportement of the REST Api called on the index
@@ -64,10 +68,16 @@ def recipeSuggestion():
     # if there is no recipe matching
     if len(result) > 0:
         ingredients = result[0]["recipes"]["ingredients"]
-        print(ingredients)
+        list_ingredient = []
+        for ingr in ingredients:
+            for s in ingr["ingredient"].split():
+                list_ingredient.append(s)
+
+        print(list_ingredient)
         # TODO
+        pred = model.predictSuggestion(list_ingredient)
         #model (predict suggestion)
-    return jsonify({'recipe': 'not implemented yet'})
+    return jsonify({'ingredients': pred})
 
 ## function describing the comportement of the REST Api called /Recipes/Replacement/
 #  @param recipe used while calling the Api expect a string formed in this way word_word_word
@@ -84,8 +94,9 @@ def recipeReplacement():
         steps = result[0]["recipes"]["steps"]
         print(steps)
         # TODO
+        pred = model.predictIngredient(steps,"")
         # model (predict ingredient)
-    return jsonify({'recipe': 'not implemented yet'})
+    return jsonify({'ingredient': pred})
 
 ## function describing the comportement of the REST Api called /Wines/Pairing/
 #  @param recipe used while calling the Api expect a string formed in this way word_word_word
