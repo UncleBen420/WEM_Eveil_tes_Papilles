@@ -25,7 +25,12 @@ settings_recipe = {
                     "type": "text"
                 },
                 "pairsWellWith": {
-                    "type": "keyword"
+                    "type": "nested",
+                    "properties": {
+                        "terms": {
+                            "type": "keyword"
+                        }
+                    }
                 }
             }
         }
@@ -48,6 +53,14 @@ def create_index(es_object, index_name, settings):
 
 
 def store_record(elastic_object, index_name, record):
+
+    pairwells = []
+    for pw in record["pairsWellWith"]:
+        pairwells.append({"terms":pw})
+    record["pairsWellWith"] = pairwells
+
+    print(record)
+
     is_stored = True
     try:
         #outcome = elastic_object.bulk(index=index_name, body=bulk_data)

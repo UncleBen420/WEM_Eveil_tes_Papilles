@@ -139,6 +139,81 @@ class DatabaseWrapper:
                            "wines":res['hits']['hits'][i]["_source"]})
         return result
 
+    def WinePairingWToR(self, pairWells):
+
+        ingredientsToFind = []
+        recipeToFind = []
+
+        splitedPairWell = []
+        for terms in pairWells:
+            for term in terms["terms"].split():
+                splitedPairWell.append(term)
+
+        for terms in splitedPairWell:
+            ingredientsToFind.append({"nested": {
+                "path": "ingredients",
+                "query": {
+                    "bool":{
+                        "must": {"match":{"ingredients.ingredient":{"query" : terms, "fuzziness": 2}}}
+                }}}})
+
+        for terms in splitedPairWell:
+            recipeToFind.append({"match":{"title":{"query" : terms, "fuzziness": 2}}})
+
+        query = {
+            "bool":{
+                "should":ingredientsToFind,
+                "filter":[
+                    {"bool":{
+                        "should":recipeToFind
+                    }}
+                ]
+            }
+        }
+
+        res = self.es.search(index=self.index_recipe, query=query)
+        result = []
+        nb_result = 3
+        if len(res['hits']['hits']) < 3:
+            nb_result = len(res['hits']['hits'])
+
+        for i in range(nb_result):
+            result.append({"score": res['hits']['hits'][i]["_score"],
+                           "recipes":res['hits']['hits'][i]["_source"]})
+        return result
+
+
+    def WinePairingRToW(self, ingredients):
+        searchTerm = []
+
+        #splitedPairWell = []
+        #for terms in pairWells:
+        #    for term in terms.split():
+        #        splitedPairWell.append(term)
+
+        for terms in ingredients:
+            searchTerm.append({"nested": {
+                "path": "pairsWellWith",
+                "query": {
+                    "bool":{
+                        "must": {"match":{"pairsWellWith.terms":{"query" : terms, "fuzziness": 2}}}
+                }}}})
+
+        query = {
+            "bool":{"should":searchTerm}
+        }
+
+        res = self.es.search(index=self.index_wine, query=query)
+        result = []
+        nb_result = 3
+        if len(res['hits']['hits']) < 3:
+            nb_result = len(res['hits']['hits'])
+
+        for i in range(nb_result):
+            result.append({"score": res['hits']['hits'][i]["_score"],
+                           "recipes":res['hits']['hits'][i]["_source"]})
+        return result
+
 #        script_fields = {
 #            "count":{
 #                "script" : {
