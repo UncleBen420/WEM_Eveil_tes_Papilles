@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import json
-from pprint import pprint
 from elasticsearch import Elasticsearch
 import argparse
 

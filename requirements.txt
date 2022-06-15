@@ -1,0 +1,7 @@
+matplotlib
+gensim
+spacy
+sklearn
+elasticsearch
+waitress
+flask
