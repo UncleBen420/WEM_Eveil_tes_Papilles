@@ -5,6 +5,7 @@ import os
 import time
 #import pandas as pd
 import numpy as np
+import difflib
 
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
@@ -129,12 +130,27 @@ class EveilleTesPapilles:
         ingredientDico_lemma = corpora.Dictionary([ingredientsList_lemma])
         return ingredientDico_lemma
 
-    def listInDictionnary(self, list_words):
+    def listInIngredientDictionnary(self, list_words):
         new_list=[word for word in list_words if word in self.ingredientDictionnary.token2id]
         return new_list
     
-    def similar(seq1, seq2):
-        return difflib.SequenceMatcher(a=seq1.lower(), b=seq2.lower()).ratio() > 0.9
+    def listInEmbeddings(self, list_words):
+        new_list =[]
+        for word in list_words:
+            if word in self.wv.index_to_key:
+                if not word in self.stop_words:
+                    new_list.append(word)
+            else:
+                wordInEmbeddings = self.similar(word)
+                if not self.similar(word) == None: 
+                    if not wordInEmbeddings in self.stop_words:
+                        new_list.append(wordInEmbeddings)
+        return new_list
+    
+    def similar(self,seq1):
+        for word in self.wv.index_to_key:
+            if difflib.SequenceMatcher(a=seq1.lower(), b=word.lower()).ratio() > 0.9:
+                return word
 
 
 # ***************************************************************************************************
@@ -158,24 +174,24 @@ class EveilleTesPapilles:
         recipe_lemma = nlp(recipe)
         recipe_word = [word.lemma_ for word in recipe_lemma]
         recipe_token = [w.lower() for w in recipe_word if not w.lower() in self.stop_words]
-        tokenInDico = self.listInDictionnary(recipe_token)
+        tokenInDico = self.listInIngredientDictionnary(recipe_token)
         return self.predictSuggestion(tokenInDico,ingredient)
         #return self.wv.similar_by_vector(ingredient)
         
     # Predict an ingredient based on a list of ingredients with positive and negative similarity
     def predictSuggestion(self,ingredients,less=""):
-        ingre2 = self.listInDictionnary(ingredients)
-        print("ingredients for the suggestion : ",ingre2)
-        suggestion = self.wv.most_similar(positive=ingre2,topn=20)
+        ingredientList = self.listInEmbeddings(ingredients)
+        print("ingredients for the suggestion : ",ingredientList)
+        suggestion = self.wv.most_similar(positive=ingredientList,topn=20)
         sugg = [ingredient[0] for ingredient in suggestion]
         if less == "":
-            return self.listInDictionnary(sugg[:5])
+            return self.listInIngredientDictionnary(sugg[:5])
         else:
             replacement =[]
             index = np.argsort(self.wv.distances(less,sugg))
             for i in range(5):
                 replacement.append(sugg[index[i]])
-            return self.listInDictionnary(replacement)
+            return self.listInIngredientDictionnary(replacement)
             
         
 
