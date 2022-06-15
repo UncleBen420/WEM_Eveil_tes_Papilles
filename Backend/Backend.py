@@ -94,7 +94,7 @@ def recipeReplacement():
         steps = result[0]["recipes"]["steps"]
         print(steps)
         # TODO
-        pred = model.predictIngredient(steps,"")
+        pred = model.predictIngredient(steps,ingredient)
         # model (predict ingredient)
     return jsonify({'ingredient': pred})
 
