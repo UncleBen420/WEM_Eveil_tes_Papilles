@@ -110,11 +110,16 @@ def recipeToPredictWine():
     if len(result) > 0:
         ingredients = result[0]["recipes"]["ingredients"]
         steps = result[0]["recipes"]["steps"]
-        print(ingredients)
-        print(steps)
+        prepared_ingredients = []
+        for ingredient in ingredients:
+            prepared_ingredients.append(ingredient["ingredient"])
+        print(prepared_ingredients)
+
         # TODO
         # model (predict wine pairing wine)
-    return jsonify({'wine': 'not implemented yet'})
+        # elastic search query
+        result = databaseWrapper.WinePairingRToW(prepared_ingredients)
+    return jsonify({'wine': result})
 
 ## function describing the comportement of the REST Api called /Recipes/Pairing/
 #  @param wine used while calling the Api expect a string formed in this way word_word_word
@@ -126,14 +131,16 @@ def WineToPredictRecipe():
     result = databaseWrapper.GetWineByName(wine)
     # if there is no recipe matching
     if len(result) > 0:
-        pairsWellWith = result[0]["wines"]["pairsWellWith"]
-        print(pairsWellWith)
+        pairwells = result[0]["wines"]["pairsWellWith"]
+        print(pairwells)
         # TODO
         # model (predict wine pairing recipe)
-    return jsonify({'recipe': 'not implemented yet'})
+        # elastic Search
+        result = databaseWrapper.WinePairingWToR(pairwells)
+    return jsonify({'recipe': result})
 
 if __name__ == "__main__":
     host = "localhost"
     port = 8080
-
+    print("server ready")
     serve(app, host=host, port=port)
