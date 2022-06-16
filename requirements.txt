@@ -2,6 +2,6 @@ matplotlib
 gensim
 spacy
 sklearn
-elasticsearch
+elasticsearch==7.17.0
 waitress
 flask

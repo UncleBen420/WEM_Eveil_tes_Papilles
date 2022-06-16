@@ -35,6 +35,16 @@ services:
     ports:
       - 5601:5601
 
+  backend-wem-eveil:
+    container_name: backend-wem-eveil
+    image: backend_eveil
+    networks:
+      - es-net
+    depends_on:
+      - es-wem-eveil
+    ports:
+      - 8080:8080
+
 volumes:
   es-wem-eveil-data:
     driver: local

@@ -15,12 +15,13 @@ app = Flask("Eveil_Tes_Papilles")
 recipeFilesName = ['Model/entree.jl','Model/plat.jl','Model/dessert.jl','Model/red_wines.jl','Model/white_wines.jl']
 
 model = EveilleTesPapilles("Model/EveilleTesPapilles.word2vec.wordvectors", recipeFilesName)
-databaseWrapper = DatabaseWrapper()
+# /!\ the address es-wem-eveil is the name of the docker container containing the es database. If you use this program locally, you must use localhost
+databaseWrapper = DatabaseWrapper(address="es-wem-eveil")
 
 ## function describing the comportement of the REST Api called on the index
 @app.route('/')
 def index():
-    return jsonify({'Something is happening!?!?!': 'I AM ALIVE BITCH!!!!'})
+    return jsonify({'Something is happening!?!?!': 'I AM ALIVE!!!!'})
 
 ## function describing the comportement of the REST Api called /Recipes/ByIngredients/
 #  @param type used while calling the Api expect a string for exemple: "dessert"
@@ -140,7 +141,8 @@ def WineToPredictRecipe():
     return jsonify({'recipe': result})
 
 if __name__ == "__main__":
-    host = "localhost"
+    # for docker 127.0.0.1 otherwise
+    host = "0.0.0.0"
     port = 8080
     print("server ready")
     serve(app, host=host, port=port)
