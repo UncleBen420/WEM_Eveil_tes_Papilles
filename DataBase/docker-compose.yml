@@ -45,6 +45,18 @@ services:
     ports:
       - 8080:8080
 
+  gui-wem-eveil:
+    container_name: gui-wem-eveil
+    image: gui_eveil
+    environment:
+      - VUE_APP_BACKEND_URL=http://localhost:8080
+    networks:
+      - es-net
+    depends_on:
+      - backend-wem-eveil
+    ports:
+      - 3000:80
+
 volumes:
   es-wem-eveil-data:
     driver: local

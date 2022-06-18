@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply mx-8 my-16;
+}
+
+h1 {
+    @apply font-bold text-xl;
+}
+
+h2 {
+    @apply font-semibold text-lg;
+}
+
+h3 {
+    @apply font-semibold;
+}
+
+form {
+    @apply flex flex-col;
+}
+
+button, label, input, select, textarea {
+    @apply mb-4;
+}
+
+label {
+    @apply mb-1;
+}
+
+input, select, textarea {
+    @apply border border-black rounded px-2 py-1 outline-0;
+}
+
+.btn {
+    @apply cursor-pointer border border-blue-500 text-blue-500 rounded px-2 py-1 text-sm uppercase;
+}
+
+.btn:hover {
+    @apply bg-blue-500 text-white;
+}

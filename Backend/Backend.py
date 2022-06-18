@@ -5,12 +5,14 @@
 #
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from waitress import serve
 from DatabaseWrapper import DatabaseWrapper
 from Model.EveilleTesPapilles import EveilleTesPapilles
 
 # Other used objects
 app = Flask("Eveil_Tes_Papilles")
+cors = CORS(app)
 
 recipeFilesName = ['Model/entree.jl','Model/plat.jl','Model/dessert.jl','Model/red_wines.jl','Model/white_wines.jl']
 
@@ -91,6 +93,7 @@ def recipeReplacement():
     ingredient = " ".join(args["ingredient"].split("_"))
     result = databaseWrapper.GetRecipeByIngredientAndName(recipe, ingredient)
     # if there is no recipe matching
+    pred = ""
     if len(result) > 0:
         steps = result[0]["recipes"]["steps"]
         print(steps)
