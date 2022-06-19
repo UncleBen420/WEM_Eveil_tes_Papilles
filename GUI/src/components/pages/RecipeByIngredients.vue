@@ -10,7 +10,7 @@
       </select>
 
       <label>Ingrédients</label>
-      <textarea v-model="ingredients" placeholder="whisky,farine,oeuf"></textarea>
+      <input v-model="ingredients" placeholder="whisky,farine,oeuf">
 
       <div>
         <button class="btn">Rechercher</button>
@@ -40,6 +40,7 @@ export default {
   methods: {
     async fetch() {
       this.loading = true;
+      this.results = [];
 
       try {
         const {data} = await BackendService.recipeByIngredients(this.type, this.ingredients.split(','));

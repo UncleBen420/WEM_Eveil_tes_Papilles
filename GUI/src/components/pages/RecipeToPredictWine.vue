@@ -32,6 +32,7 @@ export default {
   methods: {
     async fetch() {
       this.loading = true;
+      this.results = [];
 
       try {
         const {data} = await BackendService.recipeToPredictWine(this.recipe);
