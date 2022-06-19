@@ -13,7 +13,6 @@
     <Results :loading="loading" :results="results">
       <RecipeList :recipes="results"/>
     </Results>
-    <pre>{{results}}</pre>
   </div>
 </template>
 
@@ -33,6 +32,7 @@ export default {
   methods: {
     async fetch() {
       this.loading = true;
+      this.results = [];
 
       try {
         const {data} = await BackendService.wineToPredictRecipe(this.wine);

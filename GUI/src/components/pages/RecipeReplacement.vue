@@ -36,6 +36,7 @@ export default {
   methods: {
     async fetch() {
       this.loading = true;
+      this.results = [];
 
       try {
         const {data} = await BackendService.recipeReplacement(this.recipe, this.ingredient);

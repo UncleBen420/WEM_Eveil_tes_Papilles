@@ -63,6 +63,7 @@ export default {
   methods: {
     async fetch() {
       this.loading = true;
+      this.results = [];
 
       try {
         const {data} = await BackendService.recipeByParam(this.type, this.duration, this.nbPeople, this.score);
