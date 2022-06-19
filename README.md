@@ -20,3 +20,7 @@ There is the port which are exposed by the environnement.
 - kibana 5601
 - backend 8080
 - frontend 3000
+
+## Documentation
+
+the documentation is in the file "Eveille tes papilles.pdf".
