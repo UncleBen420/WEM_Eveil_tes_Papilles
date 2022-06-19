@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-5xl">Éveil tes Papilles</h1>
+    <h1 class="text-5xl">Éveille tes Papilles</h1>
     <div class="flex flex-wrap gap-x-8 gap-y-2 my-4">
       <button :class="`page-link ${route === 0 ? 'current' : ''}`" @click="goTo(0)">Ingrédients</button>
       <button :class="`page-link ${route === 1 ? 'current' : ''}`" @click="goTo(1)">Paramètres</button>
@@ -10,12 +10,12 @@
       <button :class="`page-link ${route === 5 ? 'current' : ''}`" @click="goTo(5)">Recipe Pairing</button>
     </div>
   </div>
-  <RecipeByIngredients v-if="route === 0"/>
-  <RecipeByParam v-else-if="route === 1"/>
-  <RecipeSuggestion v-else-if="route === 2"/>
-  <RecipeReplacement v-else-if="route === 3"/>
-  <RecipeToPredictWine v-else-if="route === 4"/>
-  <WineToPredictRecipe v-else-if="route === 5"/>
+  <RecipeByIngredients v-show="route === 0"/>
+  <RecipeByParam v-show="route === 1"/>
+  <RecipeSuggestion v-show="route === 2"/>
+  <RecipeReplacement v-show="route === 3"/>
+  <RecipeToPredictWine v-show="route === 4"/>
+  <WineToPredictRecipe v-show="route === 5"/>
 </template>
 
 <script>
