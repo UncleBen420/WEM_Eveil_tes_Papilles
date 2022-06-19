@@ -2,7 +2,6 @@ import AxiosService from "./axios.service";
 
 const BackendService = {
     init(url) {
-        console.log(url);
         this.axiosService = new AxiosService(url);
     },
 
@@ -18,12 +17,21 @@ const BackendService = {
     },
 
     recipeByParam(type, duration, nbPeople, score) {
-        return this.axiosService.get('/Recipes/ByParam/', {
-            type,
-            duration: duration.join(','),
-            'nb_people': nbPeople.join(','),
-            score: score.join(','),
-        });
+        const query = {type};
+        let str = this.minMaxToString(duration);
+        if (str != null) query.duration = str;
+
+        str = this.minMaxToString(nbPeople);
+        if (str != null) query.nb_people = str;
+
+        str = this.minMaxToString(score);
+        if (str != null) query.score = str;
+
+        return this.axiosService.get('/Recipes/ByParam/', query);
+    },
+    minMaxToString(minMax) {
+        if (minMax.filter((v) => v != null && v !== '').length !== 2) return null;
+        return minMax.join(',');
     },
 
     recipeSuggestion(recipe) {
@@ -32,7 +40,7 @@ const BackendService = {
         });
     },
 
-    recipeReplacement(recipe, ingredients) {
+    recipeReplacement(recipe, ingredient) {
         return this.axiosService.get('/Recipes/Replacement/', {
             recipe: recipe.replace(/\s+/g, '_'),
             ingredient,

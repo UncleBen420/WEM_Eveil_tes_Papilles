@@ -17,22 +17,20 @@
       </div>
     </form>
 
-    <div v-if="results">
-      <h1>Résultats</h1>
-      <div v-if="loading">Loading ...</div>
-      <RecipeList v-else-if="results.length" :recipes="results"/>
-      <div v-else>Aucuns résulats trouvés.</div>
-    </div>
+    <Results :results="results" :loading="loading">
+      <RecipeList :recipes="results"/>
+    </Results>
   </div>
 </template>
 
 <script>
 import BackendService from "../../services/backend.service";
 import RecipeList from "../RecipeList.vue";
+import Results from "../Results.vue";
 
 export default {
   name: "RecipeByIngredients",
-  components: {RecipeList},
+  components: {Results, RecipeList},
   data: () => ({
     loading: false,
     results: null,
@@ -42,6 +40,7 @@ export default {
   methods: {
     async fetch() {
       this.loading = true;
+
       try {
         const {data} = await BackendService.recipeByIngredients(this.type, this.ingredients.split(','));
         this.results = data;

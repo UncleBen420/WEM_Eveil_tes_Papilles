@@ -20,7 +20,8 @@
       <h3>Préparation ({{ recipe.duration }} minute)</h3>
       <p>{{ recipe.steps }}</p>
     </div>
-    <div class="flex justify-end">
+    <div class="flex justify-between">
+      <p>Score: {{recipe.score}}</p>
       <a :href="recipe.link" target="_blank" class="text-blue-500 text-sm lowercase">Plus d'infos</a>
     </div>
   </div>
